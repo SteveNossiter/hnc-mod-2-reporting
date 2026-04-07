@@ -68,17 +68,29 @@ export const kpiData = [
   {
     id: 7,
     category: "Wait Times",
-    kpi: "Wait time (in business days) from referral to service contact",
+    kpi: "Wait time (in business days) from referral to service contact by:",
     questions: [
-      { id: "7_main", label: "Number of clients with a wait time period (in business days) of same day, 1-2, 3-4, 5-9, 10-14, 15-29, 30+, has not commenced, or not reported, from referral to service contact", type: "textarea" }
+      { id: "7_a", label: "a) same day", type: "number" },
+      { id: "7_b", label: "b) 1-2", type: "number" },
+      { id: "7_c", label: "c) 3-4", type: "number" },
+      { id: "7_d", label: "d) 5-9", type: "number" },
+      { id: "7_e", label: "e) 10-14", type: "number" },
+      { id: "7_f", label: "f) 15-29", type: "number" },
+      { id: "7_g", label: "g) 30+", type: "number" },
+      { id: "7_h", label: "h) has not commenced", type: "number" },
+      { id: "7_i", label: "i) or not reported", type: "number" }
     ]
   },
   {
     id: 8,
     category: "Service Duration",
-    kpi: "Length of service duration",
+    kpi: "Number of clients with a service duration of:",
     questions: [
-      { id: "8_main", label: "Number of clients with a service duration of 1 day to 2 weeks, 3-4 weeks, 1 to 3 months, 4-6 months, more then 6 months", type: "textarea" }
+      { id: "8_a", label: "a) 1 day to 2 weeks", type: "number" },
+      { id: "8_b", label: "b) 3-4 weeks", type: "number" },
+      { id: "8_c", label: "c) 1 to 3 months", type: "number" },
+      { id: "8_d", label: "d) 4-6 months", type: "number" },
+      { id: "8_e", label: "e) more then 6 months", type: "number" }
     ]
   },
   {
