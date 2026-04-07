@@ -88,7 +88,7 @@ function App() {
           </thead>
           <tbody>
             {kpiData.flatMap((section) => 
-              section.questions.map((q, idx) => (
+              section.questions.filter(q => q.type !== 'header').map((q, idx) => (
                 <tr key={`${section.id}-${q.id}`}>
                   <td>{idx === 0 ? section.id : ''}</td>
                   <td className="kpi-cell">{idx === 0 ? section.kpi : ''}</td>
@@ -134,24 +134,30 @@ function App() {
               <div className="questions-grid">
                 {section.questions.map((q) => (
                   <div key={q.id} className="field-group">
-                    <label htmlFor={q.id}>{q.label}</label>
-                    {q.type === 'textarea' ? (
-                      <textarea
-                        id={q.id}
-                        placeholder={`Enter details...`}
-                        value={formData[q.id] || ''}
-                        onChange={(e) => handleInputChange(q.id, e.target.value)}
-                      />
-                    ) : (
-                      <input
-                        type={q.type}
-                        id={q.id}
-                        placeholder={q.type === 'number' ? '0' : 'Type here...'}
-                        value={formData[q.id] || ''}
-                        onChange={(e) => handleInputChange(q.id, e.target.value)}
-                      />
-                    )}
-                  </div>
+                  {q.type === 'header' ? (
+                    <h3 className="question-header">{q.label}</h3>
+                  ) : (
+                    <>
+                      <label htmlFor={q.id}>{q.label}</label>
+                      {q.type === 'textarea' ? (
+                        <textarea
+                          id={q.id}
+                          placeholder={`Enter details...`}
+                          value={formData[q.id] || ''}
+                          onChange={(e) => handleInputChange(q.id, e.target.value)}
+                        />
+                      ) : (
+                        <input
+                          type={q.type}
+                          id={q.id}
+                          placeholder={q.type === 'number' ? '0' : 'Type here...'}
+                          value={formData[q.id] || ''}
+                          onChange={(e) => handleInputChange(q.id, e.target.value)}
+                        />
+                      )}
+                    </>
+                  )}
+                </div>
                 ))}
               </div>
             </div>

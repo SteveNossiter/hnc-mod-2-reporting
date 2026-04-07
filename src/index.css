@@ -62,6 +62,16 @@ h1 {
 
 .questions-grid { display: grid; gap: 1.5rem; margin-top: 1.5rem; }
 
+.question-header {
+  grid-column: 1 / -1;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #2563eb;
+  margin-top: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e0f2fe;
+}
+
 .field-group label { display: block; margin-bottom: 0.6rem; font-weight: 500; font-size: 0.95rem; color: #334155; }
 
 input, textarea {
@@ -80,7 +90,7 @@ input, textarea {
 .print-only { display: none; }
 
 @media print {
-  body { background: white; -webkit-print-color-adjust: exact; }
+  body { background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .screen-only { display: none !important; }
   .print-only { display: block !important; padding: 40px; }
   

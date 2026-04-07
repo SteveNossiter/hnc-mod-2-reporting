@@ -4,10 +4,10 @@ export const kpiData = [
     category: "Mental Health Improvement (K10+/K5)",
     kpi: "Percentage of clients who showed improvement using the K10+/K5 outcome measure",
     questions: [
-      { id: "1_total", label: "Number of clients with matched pairs of outcome scores (K10+/K5 or other validated tool)", type: "number" },
-      { id: "1_improved", label: "Number of clients with matched pairs who showed improvement", type: "number" },
-      { id: "1_not_recorded", label: "Number of clients that didn’t record results (completed as part of SEWB program participation)", type: "number" },
-      { id: "1_tool", label: "What outcome measure tool was used?", type: "text" }
+      { id: "1_main", label: "Number of clients with matched pairs of outcome scores (K10+/K5 or other validated tool used by ACCHO)", type: "number" },
+      { id: "1_a", label: "a) Number of clients with matched pairs of outcome scores who showed improvement (using the K10+/K5 or other validated tool) outcome measure", type: "number" },
+      { id: "1_b", label: "a) Number of clients that didn’t record results of an outcome measure because they completed as part of SEWB program participation", type: "number" },
+      { id: "1_c", label: "a) What outcome measure tool was used", type: "text" }
     ]
   },
   {
@@ -15,24 +15,24 @@ export const kpiData = [
     category: "Mental Health Improvement (RAS-DS)",
     kpi: "Percentage of clients who showed improvement using the RAS-DS outcome measure",
     questions: [
-      { id: "2_total", label: "Number of clients with matched pairs of RAS-DS outcome scores", type: "number" },
-      { id: "2_improved", label: "Number of clients with matched pairs who showed improvement", type: "number" },
-      { id: "2_not_reported", label: "Number of clients with outcome scores not reported", type: "number" },
-      { id: "2_sewb", label: "Number of clients not reported due to SEWB program participation", type: "number" }
+      { id: "2_a", label: "a) Number of clients with matched pairs of RAS-DS outcome scores", type: "number" },
+      { id: "2_b", label: "b) Number of clients with matched pairs of outcome scores who showed improvement using the RAS-DS outcome measure", type: "number" },
+      { id: "2_c", label: "c) Number of clients with outcome scores not reported", type: "number" },
+      { id: "2_d", label: "d) Number of clients with outcome scores not reported because they reported as part of SEWB program participation", type: "number" }
     ]
   },
   {
     id: 3,
     category: "Service Delivery - Unique Clients",
-    kpi: "Number of clients who received a service",
+    kpi: "Number of clients who received a service by...",
     questions: [
-      { id: "3_gender", label: "Gender breakdown (man/male, woman/female, non-binary, different term, preferred not to answer)", type: "textarea" },
-      { id: "3_age", label: "Age group breakdown (0-17, 18-24, 25-44, 45-64, 65+, not reported)", type: "textarea" },
-      { id: "3_indigenous", label: "Aboriginal and Torres Strait Islander Status breakdown", type: "textarea" },
-      { id: "3_cald", label: "Cultural and linguistic diversity status", type: "textarea" },
-      { id: "3_neuro", label: "Neurodevelopmental condition (autism, ADHD, etc.)", type: "textarea" },
-      { id: "3_severity", label: "Mental health severity (moderate, severe, not reported)", type: "textarea" },
-      { id: "3_unique", label: "Number of unique clients engaged (ie first time clients)", type: "number" }
+      { id: "3_a", label: "a) gender (man/male, woman/female, non-binary, different term used, preferred not to answer)", type: "textarea" },
+      { id: "3_b", label: "b) age group (0-17, 18-24, 25-44, 45-64, 65+, not reported)", type: "textarea" },
+      { id: "3_c", label: "c) Aboriginal and Torres Strait Islander Status (Aboriginal, Torres Strait Islander, both Aboriginal and Torres Strait Islander, neither, not reported)", type: "textarea" },
+      { id: "3_d", label: "d) Cultural and linguistic diversity status (culturally diverse, linguistically diverse, culturally and linguistically diverse, not reported)", type: "textarea" },
+      { id: "3_e", label: "e) Neurodevelopmental condition (autism, ADHD, Intellectual disability, Dyslexia, other - specify)", type: "textarea" },
+      { id: "3_f", label: "f) Mental health severity (moderate, severe, not reported)", type: "textarea" },
+      { id: "3_g", label: "g) Number of unique clients engaged (ie first time clients)", type: "number" }
     ]
   },
   {
@@ -40,29 +40,29 @@ export const kpiData = [
     category: "Service Delivery - Service Contacts",
     kpi: "Number of service contacts (occasions of service) delivered",
     questions: [
-      { id: "4_individual", label: "Number of individual service contacts", type: "number" },
-      { id: "4_group", label: "Number of group service contacts", type: "number" }
+      { id: "4_a", label: "a) Number of individual service contacts (occasions of service) delivered", type: "number" },
+      { id: "4_b", label: "b) Number of group service contacts (occasions of service) delivered", type: "number" }
     ]
   },
   {
     id: 5,
     category: "Referrals Received",
-    kpi: "Number of referrals received",
+    kpi: "Number of referrals received by source",
     questions: [
-      { id: "5_gp", label: "Number of referrals from GP", type: "number" },
-      { id: "5_sewb", label: "Number of referrals from SEWB Program staff", type: "number" },
-      { id: "5_other", label: "Number of referrals from Other (please specify)", type: "text" }
+      { id: "5_a", label: "a) GP", type: "number" },
+      { id: "5_b", label: "b) SEWB Program staff", type: "number" },
+      { id: "5_c", label: "c) Other (please specify)", type: "text" }
     ]
   },
   {
     id: 6,
     category: "Referrals Not Accepted",
-    kpi: "Number of referrals not accepted",
+    kpi: "Number of referrals not accepted by reason",
     questions: [
-      { id: "6_criteria", label: "Number: Client does not meet mental health condition eligibility criteria", type: "number" },
-      { id: "6_capacity", label: "Number: Workforce and service capacity constraints", type: "number" },
-      { id: "6_regional", label: "Number: Limited-service availability in regional and remote area", type: "number" },
-      { id: "6_other", label: "Number: Other (please specify)", type: "text" }
+      { id: "6_a", label: "a) Client does not meet mental health condition eligibility criteria", type: "number" },
+      { id: "6_b", label: "b) Workforce and service capacity constraints", type: "number" },
+      { id: "6_c", label: "c) Limited-service availability in regional and remote area", type: "number" },
+      { id: "6_d", label: "d) Other (please specify)", type: "text" }
     ]
   },
   {
@@ -70,7 +70,7 @@ export const kpiData = [
     category: "Wait Times",
     kpi: "Wait time (in business days) from referral to service contact",
     questions: [
-      { id: "7_wait_breakdown", label: "Wait time breakdown (same day, 1-2, 3-4, 5-9, 10-14, 15-29, 30+, has not commenced, or not reported)", type: "textarea" }
+      { id: "7_main", label: "Number of clients with a wait time period (in business days) of same day, 1-2, 3-4, 5-9, 10-14, 15-29, 30+, has not commenced, or not reported, from referral to service contact", type: "textarea" }
     ]
   },
   {
@@ -78,7 +78,7 @@ export const kpiData = [
     category: "Service Duration",
     kpi: "Length of service duration",
     questions: [
-      { id: "8_duration_breakdown", label: "Service duration breakdown (1 day-2 wks, 3-4 wks, 1-3 mths, 4-6 mths, > 6 mths)", type: "textarea" }
+      { id: "8_main", label: "Number of clients with a service duration of 1 day to 2 weeks, 3-4 weeks, 1 to 3 months, 4-6 months, more then 6 months", type: "textarea" }
     ]
   },
   {
@@ -86,20 +86,20 @@ export const kpiData = [
     category: "Outcome Monitoring",
     kpi: "Matched pairs of client outcome scores",
     questions: [
-      { id: "9_matched", label: "Number of clients with matched pairs of outcome scores", type: "number" },
-      { id: "9_not_completed", label: "Number of clients who have not yet completed services", type: "number" },
-      { id: "9_sewb_skipped", label: "Number of clients skipped due to SEWB program participation", type: "number" }
+      { id: "9_a", label: "a) Number of clients with matched pairs of outcome scores", type: "number" },
+      { id: "9_b", label: "b) Number of clients who have not yet completed services", type: "number" },
+      { id: "9_c", label: "c) Number of clients with outcome scores not reported because they reported as part of SEWB program participation", type: "number" }
     ]
   },
   {
     id: 10,
     category: "Outcome Changes",
-    kpi: "Changes in outcomes scores between service start and service end",
+    kpi: "Number of clients with matched pairs of outcome scores who showed",
     questions: [
-      { id: "10_improved", label: "Number: improvement in outcome measure score", type: "number" },
-      { id: "10_deteriorated", label: "Number: deterioration in outcome measure score", type: "number" },
-      { id: "10_no_change", label: "Number: No change in outcome measure score", type: "number" },
-      { id: "10_not_reported", label: "Number: Not reported", type: "number" }
+      { id: "10_a", label: "a) improvement in outcome measure score", type: "number" },
+      { id: "10_b", label: "b) deterioration in outcome measure score", type: "number" },
+      { id: "10_c", label: "c) No change in outcome measure score", type: "number" },
+      { id: "10_d", label: "d) Not reported", type: "number" }
     ]
   },
   {
@@ -107,7 +107,7 @@ export const kpiData = [
     category: "YES PHN Survey",
     kpi: "Clients with recorded YES PHN Survey scores",
     questions: [
-      { id: "11_total", label: "Number of clients with a recorded YES PHN Survey score", type: "number" }
+      { id: "11_main", label: "Number of clients with a recorded YES PHN Survey score", type: "number" }
     ]
   },
   {
@@ -115,10 +115,10 @@ export const kpiData = [
     category: "YES PHN Experience",
     kpi: "YES PHN Survey Experience and Outcome Score",
     questions: [
-      { id: "12_avg_exp", label: "Average YES Experience score (C1-C12, min 12, max 60)", type: "number" },
-      { id: "12_avg_out", label: "Average YES Outcome score (C13-C15, min 3, max 15)", type: "number" },
-      { id: "12_better_themes", label: "Top 3 themes: 'My experience would have been better if...'", type: "textarea" },
-      { id: "12_best_themes", label: "Top 3 themes: 'The best things about this service were...'", type: "textarea" }
+      { id: "12_a", label: "a) Average number of clients with an average YES Experience score (C1-C12, minimum 12, maximum 60)", type: "number" },
+      { id: "12_b", label: "b) Average number of clients with an average YES Outcome score (C13-C15, minimum 3, maximum 15)", type: "number" },
+      { id: "12_c", label: "c) Top 3 themes in response to 'My experience would have been better if...'", type: "textarea" },
+      { id: "12_d", label: "d) Top 3 most common themes in responses to 'The best things about this service were...'", type: "textarea" }
     ]
   },
   {
@@ -126,14 +126,18 @@ export const kpiData = [
     category: "Cultural Safety & Partnership",
     kpi: "Cultural Safety and ACCHO partnership",
     questions: [
-      { id: "13_care_sessions", label: "Client Care Planning: How many sessions/conferences attended with ACCHO staff?", type: "number" },
-      { id: "13_role", label: "What was your role in these sessions?", type: "text" },
-      { id: "13_involvement", label: "Ways ACCHO staff were involved in delivery (co-facilitation, guidance, etc.)", type: "textarea" },
-      { id: "13_percentage", label: "Percentage of sessions with ACCHO staff participation (%)", type: "number" },
-      { id: "13_influence", label: "Influence of Aboriginal cultural therapists/staff on outcomes", type: "textarea" },
-      { id: "13_training", label: "Cultural Safety Training: Did you participate? (Details)", type: "textarea" },
-      { id: "13_training_learnings", label: "Key learnings and application in practice", type: "textarea" },
-      { id: "13_co_design", label: "Community-Led Activities: Were activities co-designed/initiated by ACCHO? (Details)", type: "textarea" }
+      { id: "13_header_1", label: "Quarterly Reporting Checklist - Client Care Planning", type: "header" },
+      { id: "13_a", label: "a) How many client care planning sessions or case conferences did you attend in partnership with ACCHO staff?", type: "number" },
+      { id: "13_b", label: "b) What was your role in these sessions?", type: "text" },
+      { id: "13_header_2", label: "ACCHO Involvement in Service Delivery", type: "header" },
+      { id: "13_c", label: "c) In what ways were ACCHO staff involved in delivering creative therapy sessions? (e.g., co-facilitation, cultural guidance, family engagement, referral support)", type: "textarea" },
+      { id: "13_d", label: "d) What percentage of sessions included ACCHO staff participation?", type: "number" },
+      { id: "13_e", label: "e) How has the involvement of Aboriginal cultural therapists and ACCHO staff influenced client engagement, cultural safety, and overall wellbeing outcomes?", type: "textarea" },
+      { id: "13_header_3", label: "Cultural Safety Training & Mentoring", type: "header" },
+      { id: "13_f", label: "a) Did you participate in cultural safety training, cultural supervision or mentoring activities?", type: "textarea" },
+      { id: "13_g", label: "b) How many activities, what were the key learnings and how have they been applied in your practice?", type: "textarea" },
+      { id: "13_header_4", label: "Community-Led Activities", type: "header" },
+      { id: "13_h", label: "a) Were any creative therapy activities were initiated or co-designed by ACCHO or community members?", type: "textarea" }
     ]
   }
 ];
