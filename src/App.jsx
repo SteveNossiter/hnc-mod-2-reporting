@@ -4,8 +4,17 @@ import { Download, CheckCircle, FileSpreadsheet, Send, Printer } from 'lucide-re
 import { kpiData } from './data';
 
 function App() {
-  const [formData, setFormData] = useState({});
+  // Initialize state from localStorage if available
+  const [formData, setFormData] = useState(() => {
+    const saved = localStorage.getItem('hnc_report_draft');
+    return saved ? JSON.parse(saved) : {};
+  });
   const [submitted, setSubmitted] = useState(false);
+
+  // Auto-save to localStorage whenever formData changes
+  React.useEffect(() => {
+    localStorage.setItem('hnc_report_draft', JSON.stringify(formData));
+  }, [formData]);
 
   const handleInputChange = (id, value) => {
     setFormData((prev) => ({
@@ -15,35 +24,31 @@ function App() {
   };
 
   const handleDownloadExcel = () => {
-    // Transform data for Excel matching the screenshot format
     const rows = [];
+    // Add Reporting Period info to top of Excel
+    rows.push({ 'No.': 'REPORTING PERIOD:', 'KPI / Other Data': `${formData.period_start || '---'} to ${formData.period_end || '---'}` });
+    rows.push({});
+
     kpiData.forEach(section => {
       section.questions.forEach((q, index) => {
+        if (q.type === 'header') return;
         rows.push({
-          'No.': index === 0 ? section.id : '', // Only show number on first row of section for clarity
-          'KPI / Other Data': index === 0 ? section.kpi : '', // Only show KPI on first row
+          'No.': index === 0 ? section.id : '',
+          'KPI / Other Data': index === 0 ? section.kpi : '',
           'Reporting Questions': q.label,
           'Reporting Answers': formData[q.id] || ''
         });
       });
-      // Add an empty row between sections for better readability in Excel
       rows.push({}); 
     });
 
     const worksheet = XLSX.utils.json_to_sheet(rows);
-    
-    // Set column widths for better default view
-    const wscols = [
-      { wch: 5 },  // No.
-      { wch: 40 }, // KPI / Other Data
-      { wch: 50 }, // Reporting Questions
-      { wch: 40 }  // Reporting Answers
-    ];
+    const wscols = [{ wch: 8 }, { wch: 40 }, { wch: 55 }, { wch: 45 }];
     worksheet['!cols'] = wscols;
 
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'HNCL Reporting');
-    XLSX.writeFile(workbook, 'HNCL_Reporting_Data.xlsx');
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'HNC Report');
+    XLSX.writeFile(workbook, `HNC_Status_Report_${formData.period_start || 'Draft'}.xlsx`);
   };
 
   const handlePrint = () => {
@@ -56,9 +61,16 @@ function App() {
     setTimeout(() => setSubmitted(false), 3000);
   };
 
+  const handleClear = () => {
+    if (window.confirm("Are you sure? This will delete all entered data for this report.")) {
+      setFormData({});
+      localStorage.removeItem('hnc_report_draft');
+    }
+  };
+
   return (
     <div className="app-wrapper">
-      {/* Printable Report Section (Hidden in Screen View) */}
+      {/* Printable Report Section */}
       <div id="printable-report" className="print-only">
         <div className="letterhead">
           <div className="letterhead-logo">
@@ -67,14 +79,13 @@ function App() {
           <div className="letterhead-info">
             <h2>Create Therapy</h2>
             <p>Level 1, 131 Keen Street, Lismore, NSW 2480</p>
-            <p><strong>Phone:</strong> 0402 630 184</p>
-            <p><strong>Email:</strong> sil@createtherapy.com.au</p>
+            <p><strong>Phone:</strong> 0402 630 184 | <strong>Email:</strong> sil@createtherapy.com.au</p>
           </div>
         </div>
         <hr />
         <div className="report-title">
-          <h1>HNCL Services Reporting - Model 2</h1>
-          <p>Date: {new Date().toLocaleDateString()}</p>
+          <h1>HNC Quarterly Project Status Report</h1>
+          <p><strong>Reporting Period:</strong> {formData.period_start || '---'} to {formData.period_end || '---'}</p>
         </div>
         
         <table className="report-table">
@@ -107,7 +118,7 @@ function App() {
           <div className="brand-header">
             <img src="/logo.jpg" alt="Logo" className="header-logo" />
             <div>
-              <h1>HNCL Reporting Portal</h1>
+              <h1>HNC Quarterly Project Status Report</h1>
               <p className="subtitle">Create Therapy - Model 2 Pilot</p>
             </div>
           </div>
@@ -115,12 +126,34 @@ function App() {
 
         <form onSubmit={handleSubmit} className="form-card">
           <div className="top-actions">
-             <button type="button" onClick={handlePrint} className="btn-secondary">
-              <Printer size={18} /> Print Report
+            <button type="button" onClick={handleClear} className="btn-secondary danger-hover">
+              Clear All
+            </button>
+            <button type="button" onClick={handlePrint} className="btn-secondary">
+              <Printer size={18} /> Print PDF
             </button>
             <button type="button" onClick={handleDownloadExcel} className="btn-secondary">
-              <FileSpreadsheet size={18} /> Export Excel
+              <FileSpreadsheet size={18} /> Excel Export
             </button>
+          </div>
+
+          <div className="report-period-selection">
+            <div className="field-group">
+              <label>Reporting Period Start Date</label>
+              <input 
+                type="date" 
+                value={formData.period_start || ''} 
+                onChange={(e) => handleInputChange('period_start', e.target.value)} 
+              />
+            </div>
+            <div className="field-group">
+              <label>Reporting Period End Date</label>
+              <input 
+                type="date" 
+                value={formData.period_end || ''} 
+                onChange={(e) => handleInputChange('period_end', e.target.value)} 
+              />
+            </div>
           </div>
 
           {kpiData.map((section) => (
