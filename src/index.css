@@ -143,37 +143,37 @@ body {
   margin-right: 2rem;
 }
 
-.sync-status {
+.status-pill {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: #f0fdf4;
-  color: #16a34a;
-  padding: 6px 12px;
+  padding: 8px 16px;
   border-radius: 99px;
   font-size: 0.85rem;
   font-weight: 600;
-  border: 1px solid #dcfce7;
+  border: 1px solid transparent;
 }
 
-.sync-status.small {
-  background: white;
-  border-color: #e2e8f0;
-  color: #64748b;
+.status-pill.online {
+  background: #f0fdf4;
+  color: #16a34a;
+  border-color: #dcfce7;
 }
 
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+.status-pill.offline {
+  background: #fff1f2;
+  color: #e11d48;
+  border-color: #ffe4e6;
 }
 
-.animate-spin {
-  animation: spin 1s linear infinite;
+.btn-primary, .btn-secondary, .report-card {
+  cursor: pointer !important;
 }
 
-.btn-primary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.create-btn {
+  padding: 1.2rem 2.5rem;
+  font-size: 1.2rem;
+  box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2);
 }
 
 .top-actions {
@@ -277,4 +277,18 @@ input, textarea {
   .answer-cell { font-weight: 500; background: #fdfdfd; }
   
   @page { margin: 1cm; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+.sync-status.small {
+  background: white; border: 1px solid #e2e8f0; border-radius: 99px;
+  display: flex; align-items: center; gap: 8px; padding: 6px 12px; font-size: 0.85rem;
 }
