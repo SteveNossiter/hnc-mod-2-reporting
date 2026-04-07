@@ -21,19 +21,42 @@ function App() {
 
   async function fetchReports() {
     setLoading(true);
-    if (!supabase) return;
     
-    const { data, error } = await supabase
-      .from('reports')
-      .select('*')
-      .order('last_modified', { ascending: false });
-
-    if (error) {
-      console.error('Error fetching reports:', error);
-    } else {
-      setReports(data || []);
+    // Safety check: if supabase isn't configured, stop loading immediately
+    if (!supabase) {
+      console.warn("Supabase not configured. Check your keys in supabaseClient.js");
+      setLoading(false);
+      return;
     }
-    setLoading(false);
+    
+    // Create a controller to handle a 3-second timeout
+    const timeoutPromise = new Promise((resolve) => 
+      setTimeout(() => resolve({ error: 'timeout' }), 3000)
+    );
+
+    try {
+      // Race the supabase fetch against our 3s timeout
+      const result = await Promise.race([
+        supabase.from('reports').select('*').order('last_modified', { ascending: false }),
+        timeoutPromise
+      ]);
+
+      if (result.error) {
+        if (result.error === 'timeout') {
+          console.error("Fetch timed out after 3 seconds.");
+        } else {
+          console.error('Database error:', result.error);
+        }
+        setReports([]); // Fallback to empty list
+      } else {
+        setReports(result.data || []);
+      }
+    } catch (err) {
+      console.error("Unexpected fetch error:", err);
+      setReports([]);
+    } finally {
+      setLoading(false);
+    }
   }
 
   // 2. Auto-save specific report when data changes
