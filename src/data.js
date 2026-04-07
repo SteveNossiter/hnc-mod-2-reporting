@@ -2,18 +2,18 @@ export const kpiData = [
   {
     id: 1,
     category: "Mental Health Improvement (K10+/K5)",
-    kpi: "Percentage of clients who showed improvement using the K10+/K5 outcome measure",
+    kpi: "Number of clients who showed improvement using the K10+/K5 outcome measure",
     questions: [
-      { id: "1_main", label: "Number of clients with matched pairs of outcome scores (K10+/K5 or other validated tool used by ACCHO)", type: "number" },
-      { id: "1_a", label: "a) Number of clients with matched pairs of outcome scores who showed improvement (using the K10+/K5 or other validated tool) outcome measure", type: "number" },
-      { id: "1_b", label: "a) Number of clients that didn’t record results of an outcome measure because they completed as part of SEWB program participation", type: "number" },
-      { id: "1_c", label: "a) What outcome measure tool was used", type: "text" }
+      { id: "1_a", label: "a) Number of clients with matched pairs of outcome scores (K10+/K5 or other validated tool used by ACCHO)", type: "number" },
+      { id: "1_b", label: "b) Number of clients with matched pairs of outcome scores who showed improvement (using the K10+/K5 or other validated tool) outcome measure", type: "number" },
+      { id: "1_c", label: "c) Number of clients that didn’t record results of an outcome measure because they completed as part of the SEWB program participation", type: "number" },
+      { id: "1_d", label: "d) What outcome measure tool was used", type: "text" }
     ]
   },
   {
     id: 2,
     category: "Mental Health Improvement (RAS-DS)",
-    kpi: "Percentage of clients who showed improvement using the RAS-DS outcome measure",
+    kpi: "Number of clients who showed improvement using the RAS-DS outcome measure",
     questions: [
       { id: "2_a", label: "a) Number of clients with matched pairs of RAS-DS outcome scores", type: "number" },
       { id: "2_b", label: "b) Number of clients with matched pairs of outcome scores who showed improvement using the RAS-DS outcome measure", type: "number" },
@@ -26,12 +26,49 @@ export const kpiData = [
     category: "Service Delivery - Unique Clients",
     kpi: "Number of clients who received a service by...",
     questions: [
-      { id: "3_a", label: "a) gender (man/male, woman/female, non-binary, different term used, preferred not to answer)", type: "textarea" },
-      { id: "3_b", label: "b) age group (0-17, 18-24, 25-44, 45-64, 65+, not reported)", type: "textarea" },
-      { id: "3_c", label: "c) Aboriginal and Torres Strait Islander Status (Aboriginal, Torres Strait Islander, both Aboriginal and Torres Strait Islander, neither, not reported)", type: "textarea" },
-      { id: "3_d", label: "d) Cultural and linguistic diversity status (culturally diverse, linguistically diverse, culturally and linguistically diverse, not reported)", type: "textarea" },
-      { id: "3_e", label: "e) Neurodevelopmental condition (autism, ADHD, Intellectual disability, Dyslexia, other - specify)", type: "textarea" },
-      { id: "3_f", label: "f) Mental health severity (moderate, severe, not reported)", type: "textarea" },
+      { id: "3_a_header", label: "a) gender", type: "header" },
+      { id: "3_a_i", label: "i) Man / Male", type: "number" },
+      { id: "3_a_ii", label: "ii) Woman / Female", type: "number" },
+      { id: "3_a_iii", label: "iii) Non-Binary", type: "number" },
+      { id: "3_a_iv_num", label: "iv) Different term (Number)", type: "number" },
+      { id: "3_a_iv_text", label: "iv) Different term (Fill in term)", type: "text" },
+      { id: "3_a_v", label: "v) Prefer not to say", type: "number" },
+
+      { id: "3_b_header", label: "b) Age Group", type: "header" },
+      { id: "3_b_i", label: "i) 0-17", type: "number" },
+      { id: "3_b_ii", label: "ii) 18-24", type: "number" },
+      { id: "3_b_iii", label: "iii) 25-44", type: "number" },
+      { id: "3_b_iv", label: "iv) 45-64", type: "number" },
+      { id: "3_b_v", label: "v) 65+", type: "number" },
+      { id: "3_b_vi", label: "vi) Not reported", type: "number" },
+
+      { id: "3_c_header", label: "c) Aboriginal / Torres Strait Islander status", type: "header" },
+      { id: "3_c_i", label: "i) Aboriginal", type: "number" },
+      { id: "3_c_ii", label: "ii) Torres Strait Islander", type: "number" },
+      { id: "3_c_iii", label: "iii) Aboriginal and Torres Strait Islander", type: "number" },
+      { id: "3_c_iv", label: "iv) Neither", type: "number" },
+      { id: "3_c_v", label: "v) Not reported", type: "number" },
+
+      { id: "3_d_header", label: "d) Cultural and linguistic diversity status", type: "header" },
+      { id: "3_d_i", label: "i) Culturally diverse", type: "number" },
+      { id: "3_d_ii", label: "ii) Linguistically diverse", type: "number" },
+      { id: "3_d_iii", label: "iii) Culturally and linguistically diverse", type: "number" },
+      { id: "3_d_iv", label: "iv) Not reported", type: "number" },
+
+      { id: "3_e_header", label: "e) Neurodevelopmental condition", type: "header" },
+      { id: "3_e_i", label: "i) Autism", type: "number" },
+      { id: "3_e_ii", label: "ii) ADHD", type: "number" },
+      { id: "3_e_iii", label: "iii) Intellectual disability", type: "number" },
+      { id: "3_e_iv", label: "iv) Dyslexia", type: "number" },
+      { id: "3_e_v_num", label: "v) Other - specify (Number)", type: "number" },
+      { id: "3_e_v_text", label: "v) Other - specify (Fill in condition)", type: "text" },
+
+      { id: "3_f_header", label: "f) Mental health severity", type: "header" },
+      { id: "3_f_i", label: "i) Moderate", type: "number" },
+      { id: "3_f_ii", label: "ii) Severe", type: "number" },
+      { id: "3_f_iii", label: "iii) Not reported", type: "number" },
+
+      { id: "3_g_header", label: "g) Engagement Status", type: "header" },
       { id: "3_g", label: "g) Number of unique clients engaged (ie first time clients)", type: "number" }
     ]
   },

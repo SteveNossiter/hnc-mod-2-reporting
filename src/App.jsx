@@ -166,7 +166,7 @@ function App() {
 
               <div className="questions-grid">
                 {section.questions.map((q) => (
-                  <div key={q.id} className="field-group">
+                  <div key={q.id} className={`field-group ${q.label.match(/^[ivx]+\)/) ? 'sub-question' : ''}`}>
                   {q.type === 'header' ? (
                     <h3 className="question-header">{q.label}</h3>
                   ) : (

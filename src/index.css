@@ -62,6 +62,21 @@ h1 {
 
 .questions-grid { display: grid; gap: 1.5rem; margin-top: 1.5rem; }
 
+/* Styling for sub-questions like i), ii) */
+.sub-question {
+  padding-left: 2.5rem;
+}
+
+.sub-question label {
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.sub-question input {
+  max-width: 300px; /* Make sub-number inputs more compact */
+}
+
 .question-header {
   grid-column: 1 / -1;
   font-size: 1.1rem;
