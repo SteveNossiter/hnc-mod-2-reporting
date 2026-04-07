@@ -1,32 +1,63 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
-import { Download, CheckCircle, FileSpreadsheet, Send, Printer } from 'lucide-react';
+import { 
+  Plus, FileText, Trash2, Edit3, ChevronRight, 
+  ArrowLeft, Download, CheckCircle, FileSpreadsheet, Send, Printer 
+} from 'lucide-react';
 import { kpiData } from './data';
 
 function App() {
-  // Initialize state from localStorage if available
-  const [formData, setFormData] = useState(() => {
-    const saved = localStorage.getItem('hnc_report_draft');
-    return saved ? JSON.parse(saved) : {};
+  const [reports, setReports] = useState(() => {
+    const saved = localStorage.getItem('hnc_all_reports');
+    return saved ? JSON.parse(saved) : [];
   });
+  
+  const [activeReportId, setActiveReportId] = useState(null);
   const [submitted, setSubmitted] = useState(false);
 
-  // Auto-save to localStorage whenever formData changes
-  React.useEffect(() => {
-    localStorage.setItem('hnc_report_draft', JSON.stringify(formData));
-  }, [formData]);
+  // Auto-save the full list to localStorage
+  useEffect(() => {
+    localStorage.setItem('hnc_all_reports', JSON.stringify(reports));
+  }, [reports]);
 
-  const handleInputChange = (id, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [id]: value,
-    }));
+  // Current active report object
+  const activeReport = reports.find(r => r.id === activeReportId);
+
+  const handleCreateNew = () => {
+    const newReport = {
+      id: Date.now().toString(),
+      period_start: '',
+      period_end: '',
+      data: {},
+      last_modified: new Date().toISOString()
+    };
+    setReports([newReport, ...reports]);
+    setActiveReportId(newReport.id);
+  };
+
+  const handleUpdateActiveReport = (updates) => {
+    setReports(prev => prev.map(r => 
+      r.id === activeReportId ? { ...r, ...updates, last_modified: new Date().toISOString() } : r
+    ));
+  };
+
+  const handleInputChange = (fieldId, value) => {
+    handleUpdateActiveReport({
+      data: { ...activeReport.data, [fieldId]: value }
+    });
+  };
+
+  const handleDeleteReport = (id, e) => {
+    e.stopPropagation();
+    if (window.confirm("Are you sure you want to delete this report forever?")) {
+      setReports(prev => prev.filter(r => r.id !== id));
+      if (activeReportId === id) setActiveReportId(null);
+    }
   };
 
   const handleDownloadExcel = () => {
     const rows = [];
-    // Add Reporting Period info to top of Excel
-    rows.push({ 'No.': 'REPORTING PERIOD:', 'KPI / Other Data': `${formData.period_start || '---'} to ${formData.period_end || '---'}` });
+    rows.push({ 'No.': 'REPORTING PERIOD:', 'KPI / Other Data': `${activeReport.period_start || '---'} to ${activeReport.period_end || '---'}` });
     rows.push({});
 
     kpiData.forEach(section => {
@@ -36,38 +67,77 @@ function App() {
           'No.': index === 0 ? section.id : '',
           'KPI / Other Data': index === 0 ? section.kpi : '',
           'Reporting Questions': q.label,
-          'Reporting Answers': formData[q.id] || ''
+          'Reporting Answers': activeReport.data[q.id] || ''
         });
       });
       rows.push({}); 
     });
 
     const worksheet = XLSX.utils.json_to_sheet(rows);
-    const wscols = [{ wch: 8 }, { wch: 40 }, { wch: 55 }, { wch: 45 }];
-    worksheet['!cols'] = wscols;
-
+    worksheet['!cols'] = [{ wch: 8 }, { wch: 40 }, { wch: 55 }, { wch: 45 }];
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'HNC Report');
-    XLSX.writeFile(workbook, `HNC_Status_Report_${formData.period_start || 'Draft'}.xlsx`);
+    XLSX.writeFile(workbook, `HNC_Report_${activeReport.period_start || 'Draft'}.xlsx`);
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
+  /* --- Dashboard View --- */
+  if (!activeReportId) {
+    return (
+      <div className="container dashboard-view">
+        <header className="dashboard-header">
+           <img src="/logo.jpg" alt="Logo" className="header-logo-small" />
+           <div>
+             <h1>Reporting Dashboard</h1>
+             <p className="subtitle">HNC Quarterly Status Reports</p>
+           </div>
+        </header>
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 3000);
-  };
+        <div className="dashboard-actions">
+           <button onClick={handleCreateNew} className="btn-primary">
+             <Plus size={20} /> Create New Report
+           </button>
+        </div>
 
-  const handleClear = () => {
-    if (window.confirm("Are you sure? This will delete all entered data for this report.")) {
-      setFormData({});
-      localStorage.removeItem('hnc_report_draft');
-    }
-  };
+        <div className="reports-list">
+           {reports.length === 0 ? (
+             <div className="empty-state">
+                <FileText size={48} />
+                <p>No reports found. Click "Create New" to start your first quarterly report.</p>
+             </div>
+           ) : (
+             reports.map(report => (
+               <div 
+                 key={report.id} 
+                 className="report-card" 
+                 onClick={() => setActiveReportId(report.id)}
+               >
+                 <div className="report-info">
+                   <div className="report-icon"><FileText /></div>
+                   <div>
+                     <h3>{report.period_start || 'New Draft'} {report.period_end ? `- ${report.period_end}` : ''}</h3>
+                     <p className="last-modified">Last saved: {new Date(report.last_modified).toLocaleDateString()}</p>
+                   </div>
+                 </div>
+                 <div className="report-actions-mini">
+                   <button className="btn-icon" title="Edit"><Edit3 size={18} /></button>
+                   <button 
+                     className="btn-icon danger" 
+                     onClick={(e) => handleDeleteReport(report.id, e)}
+                     title="Delete"
+                   >
+                     <Trash2 size={18} />
+                   </button>
+                   <ChevronRight size={20} className="chevron" />
+                 </div>
+               </div>
+             ))
+           )}
+        </div>
+      </div>
+    );
+  }
 
+  /* --- Form View --- */
   return (
     <div className="app-wrapper">
       {/* Printable Report Section */}
@@ -85,7 +155,7 @@ function App() {
         <hr />
         <div className="report-title">
           <h1>HNC Quarterly Project Status Report</h1>
-          <p><strong>Reporting Period:</strong> {formData.period_start || '---'} to {formData.period_end || '---'}</p>
+          <p><strong>Reporting Period:</strong> {activeReport.period_start || '---'} to {activeReport.period_end || '---'}</p>
         </div>
         
         <table className="report-table">
@@ -104,7 +174,7 @@ function App() {
                   <td>{idx === 0 ? section.id : ''}</td>
                   <td className="kpi-cell">{idx === 0 ? section.kpi : ''}</td>
                   <td>{q.label}</td>
-                  <td className="answer-cell">{formData[q.id] || '---'}</td>
+                  <td className="answer-cell">{activeReport.data[q.id] || '---'}</td>
                 </tr>
               ))
             )}
@@ -116,20 +186,19 @@ function App() {
       <div className="container screen-only">
         <header>
           <div className="brand-header">
-            <img src="/logo.jpg" alt="Logo" className="header-logo" />
-            <div>
-              <h1>HNC Quarterly Project Status Report</h1>
-              <p className="subtitle">Create Therapy - Model 2 Pilot</p>
+            <button className="btn-back" onClick={() => setActiveReportId(null)}>
+               <ArrowLeft size={24} /> Back to Dashboard
+            </button>
+            <div className="title-group">
+              <h1>HNC Report Form</h1>
+              <p className="subtitle">{activeReport.period_start || 'Draft'}</p>
             </div>
           </div>
         </header>
 
-        <form onSubmit={handleSubmit} className="form-card">
+        <form onSubmit={(e) => { e.preventDefault(); setSubmitted(true); setTimeout(() => setSubmitted(false), 3000); }} className="form-card">
           <div className="top-actions">
-            <button type="button" onClick={handleClear} className="btn-secondary danger-hover">
-              Clear All
-            </button>
-            <button type="button" onClick={handlePrint} className="btn-secondary">
+            <button type="button" onClick={() => window.print()} className="btn-secondary">
               <Printer size={18} /> Print PDF
             </button>
             <button type="button" onClick={handleDownloadExcel} className="btn-secondary">
@@ -142,16 +211,16 @@ function App() {
               <label>Reporting Period Start Date</label>
               <input 
                 type="date" 
-                value={formData.period_start || ''} 
-                onChange={(e) => handleInputChange('period_start', e.target.value)} 
+                value={activeReport.period_start || ''} 
+                onChange={(e) => handleUpdateActiveReport({ period_start: e.target.value })} 
               />
             </div>
             <div className="field-group">
               <label>Reporting Period End Date</label>
               <input 
                 type="date" 
-                value={formData.period_end || ''} 
-                onChange={(e) => handleInputChange('period_end', e.target.value)} 
+                value={activeReport.period_end || ''} 
+                onChange={(e) => handleUpdateActiveReport({ period_end: e.target.value })} 
               />
             </div>
           </div>
@@ -176,7 +245,7 @@ function App() {
                         <textarea
                           id={q.id}
                           placeholder={`Enter details...`}
-                          value={formData[q.id] || ''}
+                          value={activeReport.data[q.id] || ''}
                           onChange={(e) => handleInputChange(q.id, e.target.value)}
                         />
                       ) : (
@@ -184,7 +253,7 @@ function App() {
                           type={q.type}
                           id={q.id}
                           placeholder={q.type === 'number' ? '0' : 'Type here...'}
-                          value={formData[q.id] || ''}
+                          value={activeReport.data[q.id] || ''}
                           onChange={(e) => handleInputChange(q.id, e.target.value)}
                         />
                       )}
