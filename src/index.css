@@ -143,8 +143,37 @@ body {
   margin-right: 2rem;
 }
 
-.btn-back:hover {
-  color: var(--primary);
+.sync-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f0fdf4;
+  color: #16a34a;
+  padding: 6px 12px;
+  border-radius: 99px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid #dcfce7;
+}
+
+.sync-status.small {
+  background: white;
+  border-color: #e2e8f0;
+  color: #64748b;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .top-actions {

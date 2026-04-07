@@ -2,57 +2,123 @@ import React, { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 import { 
   Plus, FileText, Trash2, Edit3, ChevronRight, 
-  ArrowLeft, Download, CheckCircle, FileSpreadsheet, Send, Printer 
+  ArrowLeft, Download, CheckCircle, FileSpreadsheet, Send, Printer, Loader2
 } from 'lucide-react';
 import { kpiData } from './data';
+import { supabase } from './supabaseClient';
 
 function App() {
-  const [reports, setReports] = useState(() => {
-    const saved = localStorage.getItem('hnc_all_reports');
-    return saved ? JSON.parse(saved) : [];
-  });
-  
+  const [reports, setReports] = useState([]);
   const [activeReportId, setActiveReportId] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  // Auto-save the full list to localStorage
+  // 1. Fetch reports on mount
   useEffect(() => {
-    localStorage.setItem('hnc_all_reports', JSON.stringify(reports));
-  }, [reports]);
+    fetchReports();
+  }, []);
 
-  // Current active report object
+  async function fetchReports() {
+    setLoading(true);
+    if (!supabase) return;
+    
+    const { data, error } = await supabase
+      .from('reports')
+      .select('*')
+      .order('last_modified', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching reports:', error);
+    } else {
+      setReports(data || []);
+    }
+    setLoading(false);
+  }
+
+  // 2. Auto-save specific report when data changes
+  useEffect(() => {
+    const report = reports.find(r => r.id === activeReportId);
+    if (!report || !activeReportId) return;
+
+    const timer = setTimeout(() => {
+      saveReportToSupabase(report);
+    }, 1000); // 1-second debounce to avoid hammering the DB
+
+    return () => clearTimeout(timer);
+  }, [reports, activeReportId]);
+
+  async function saveReportToSupabase(report) {
+    if (!supabase) return;
+    setSyncing(true);
+    
+    const { error } = await supabase
+      .from('reports')
+      .update({
+        data: report.data,
+        period_start: report.period_start,
+        period_end: report.period_end,
+        last_modified: new Date().toISOString()
+      })
+      .eq('id', report.id);
+
+    if (error) console.error('Save error:', error);
+    setSyncing(false);
+  }
+
   const activeReport = reports.find(r => r.id === activeReportId);
 
-  const handleCreateNew = () => {
-    const newReport = {
-      id: Date.now().toString(),
+  const handleCreateNew = async () => {
+    if (!supabase) return;
+    setSyncing(true);
+    
+    const newEntry = {
       period_start: '',
       period_end: '',
-      data: {},
-      last_modified: new Date().toISOString()
+      data: {}
     };
-    setReports([newReport, ...reports]);
-    setActiveReportId(newReport.id);
+
+    const { data, error } = await supabase
+      .from('reports')
+      .insert([newEntry])
+      .select();
+
+    if (error) {
+      console.error('Insert error:', error);
+    } else if (data) {
+      setReports([data[0], ...reports]);
+      setActiveReportId(data[0].id);
+    }
+    setSyncing(false);
   };
 
   const handleUpdateActiveReport = (updates) => {
     setReports(prev => prev.map(r => 
-      r.id === activeReportId ? { ...r, ...updates, last_modified: new Date().toISOString() } : r
+      r.id === activeReportId ? { ...r, ...updates } : r
     ));
   };
 
   const handleInputChange = (fieldId, value) => {
+    if (!activeReport) return;
     handleUpdateActiveReport({
       data: { ...activeReport.data, [fieldId]: value }
     });
   };
 
-  const handleDeleteReport = (id, e) => {
+  const handleDeleteReport = async (id, e) => {
     e.stopPropagation();
-    if (window.confirm("Are you sure you want to delete this report forever?")) {
-      setReports(prev => prev.filter(r => r.id !== id));
-      if (activeReportId === id) setActiveReportId(null);
+    if (!window.confirm("Are you sure you want to delete this report forever?")) return;
+    
+    if (supabase) {
+      const { error } = await supabase.from('reports').delete().eq('id', id);
+      if (error) {
+        console.error('Delete error:', error);
+        return;
+      }
     }
+    
+    setReports(prev => prev.filter(r => r.id !== id));
+    if (activeReportId === id) setActiveReportId(null);
   };
 
   const handleDownloadExcel = () => {
@@ -86,53 +152,61 @@ function App() {
       <div className="container dashboard-view">
         <header className="dashboard-header">
            <img src="/logo.jpg" alt="Logo" className="header-logo-small" />
-           <div>
+           <div className="title-group">
              <h1>Reporting Dashboard</h1>
-             <p className="subtitle">HNC Quarterly Status Reports</p>
+             <p className="subtitle">Official HNC Quarterly Status Reports</p>
            </div>
+           {syncing && <div className="sync-status"><Loader2 className="animate-spin" /> Syncing...</div>}
         </header>
 
         <div className="dashboard-actions">
-           <button onClick={handleCreateNew} className="btn-primary">
-             <Plus size={20} /> Create New Report
+           <button onClick={handleCreateNew} className="btn-primary" disabled={syncing}>
+             <Plus size={20} /> Create New Quarterly Report
            </button>
         </div>
 
-        <div className="reports-list">
-           {reports.length === 0 ? (
-             <div className="empty-state">
-                <FileText size={48} />
-                <p>No reports found. Click "Create New" to start your first quarterly report.</p>
-             </div>
-           ) : (
-             reports.map(report => (
-               <div 
-                 key={report.id} 
-                 className="report-card" 
-                 onClick={() => setActiveReportId(report.id)}
-               >
-                 <div className="report-info">
-                   <div className="report-icon"><FileText /></div>
-                   <div>
-                     <h3>{report.period_start || 'New Draft'} {report.period_end ? `- ${report.period_end}` : ''}</h3>
-                     <p className="last-modified">Last saved: {new Date(report.last_modified).toLocaleDateString()}</p>
+        {loading ? (
+          <div className="empty-state">
+            <Loader2 className="animate-spin" size={48} />
+            <p>Loading your reports from the cloud...</p>
+          </div>
+        ) : (
+          <div className="reports-list">
+             {reports.length === 0 ? (
+               <div className="empty-state">
+                  <FileText size={48} />
+                  <p>No reports found. Click "Create New" to start your first draft.</p>
+               </div>
+             ) : (
+               reports.map(report => (
+                 <div 
+                   key={report.id} 
+                   className="report-card" 
+                   onClick={() => setActiveReportId(report.id)}
+                 >
+                   <div className="report-info">
+                     <div className="report-icon"><FileText /></div>
+                     <div>
+                       <h3>{report.period_start || 'New Draft'} {report.period_end ? ` to ${report.period_end}` : ''}</h3>
+                       <p className="last-modified">Last saved: {new Date(report.last_modified).toLocaleString()}</p>
+                     </div>
+                   </div>
+                   <div className="report-actions-mini">
+                     <button className="btn-icon" title="Edit"><Edit3 size={18} /></button>
+                     <button 
+                       className="btn-icon danger" 
+                       onClick={(e) => handleDeleteReport(report.id, e)}
+                       title="Delete"
+                     >
+                       <Trash2 size={18} />
+                     </button>
+                     <ChevronRight size={20} className="chevron" />
                    </div>
                  </div>
-                 <div className="report-actions-mini">
-                   <button className="btn-icon" title="Edit"><Edit3 size={18} /></button>
-                   <button 
-                     className="btn-icon danger" 
-                     onClick={(e) => handleDeleteReport(report.id, e)}
-                     title="Delete"
-                   >
-                     <Trash2 size={18} />
-                   </button>
-                   <ChevronRight size={20} className="chevron" />
-                 </div>
-               </div>
-             ))
-           )}
-        </div>
+               ))
+             )}
+          </div>
+        )}
       </div>
     );
   }
@@ -186,13 +260,14 @@ function App() {
       <div className="container screen-only">
         <header>
           <div className="brand-header">
-            <button className="btn-back" onClick={() => setActiveReportId(null)}>
-               <ArrowLeft size={24} /> Back to Dashboard
+            <button className="btn-back" onClick={() => { setActiveReportId(null); fetchReports(); }}>
+               <ArrowLeft size={24} /> Back
             </button>
             <div className="title-group">
               <h1>HNC Report Form</h1>
-              <p className="subtitle">{activeReport.period_start || 'Draft'}</p>
+              <p className="subtitle">{activeReport.period_start ? `Period: ${activeReport.period_start} to ${activeReport.period_end}` : 'New Draft'}</p>
             </div>
+            {syncing && <div className="sync-status small"><Loader2 className="animate-spin" size={16} /> Cloud Autosave...</div>}
           </div>
         </header>
 
@@ -269,11 +344,11 @@ function App() {
             <button type="submit" className="btn-primary main-submit">
               {submitted ? (
                 <>
-                  <CheckCircle size={20} /> Changes Saved Successfully
+                  <CheckCircle size={20} /> Saved to Cloud
                 </>
               ) : (
                 <>
-                  <Send size={20} /> Save Reporting Data
+                  <Send size={20} /> Finalize Draft
                 </>
               )}
             </button>
